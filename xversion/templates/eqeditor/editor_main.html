@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EduQuest - Editor{% endblock %}
+
+{% block content %}
+
+  <style>
+    .container {
+      width: 65% !important;
+    }
+
+
+#toggleButton {
+    background-color: #F92 !important;
+  border-color: #F92 !important;
+  margin-top: 50px;
+margin-left: 150px;
+}
+
+
+        #sidebar {
+      height: 100%;
+      width: 250px; /* Set the initial width to your desired open width */
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #232F3E;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+    }
+
+    #sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 18px;
+      color: #ffffff;
+      display: block;
+      transition: 0.3s;
+      border-bottom: 1px solid #555; /* Add a border line */
+    }
+
+    #sidebar a:first-child {
+      border-bottom: none; /* Remove the border from the last link */
+    }
+
+    #sidebar a:last-child {
+      border-bottom: none; /* Remove the border from the last link */
+    }
+
+    #sidebar a:hover {
+      color: #f1f1f1;
+    }
+
+    #main {
+      transition: margin-left .5s;
+      padding: 16px;
+      margin-left: 80px; /* Set the initial margin to match the open width */
+    }
+
+
+
+    .horiz-elems {
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        line-height: 30px;
+    }
+    #your-para {
+        background: #f1f1f1;
+    }
+
+    #result-quest {
+
+    }
+
+    #successModal {
+        display: block;
+        position: fixed;
+        top: 150px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 99;
+    }
+
+  </style>
+
+        {{ form.media }}
+
+
+
+    <div id="successModal" class="text-center" style="display: none;">
+        <div><img src="{% static 'ico_set/icons8-success-96.png' %}"></div>
+        <div style="font-weight:bold"> Saved Successfully </div>
+    </div>
+
+    <div id="sidebar">
+        <h4 class="text-center" style="color:#ffffff">Your questionnaires</h4>
+        {% for content in user_content %}
+            <a data-content-id="{{content.id}}">{{content.content}}</a>
+        {% endfor %}
+</div>
+
+        <button id="toggleButton" class="btn btn-primary text-center" onclick="toogleNav()">Hide all questionnaires</button>
+
+  <div id="main" class="row">
+    <div class="col col-lg-2">
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const toggleButton = document.getElementById("toggleButton");
+      toggleButton.addEventListener("click", function() {
+        if (toggleButton.textContent === "Hide all questionnaires") {
+            toggleButton.textContent = "Show all questionnaires";
+            document.getElementById("sidebar").style.width = "0";
+        } else {
+            toggleButton.textContent = "Hide all questionnaires";
+            document.getElementById("sidebar").style.width = "250px";
+        }
+      });
+     });
+  </script>
+
+
+    <form id="editorForm" method="post" action="{% url 'eqeditor:save_to_database' %}">
+        {% csrf_token %}
+        <textarea id="id_content" name="content" rows="10" cols="40">{{ form.content.value }}</textarea>
+            {{ form.content.errors }}
+    <button type="button" id="saveToDatabase" class="btn btn-success" style="margin-top: 10px">Save</button>
+            <button id="previewButton" type="button" class="btn btn-primary" style="margin-top: 10px">Preview</button>
+
+</form>
+  </div>
+
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const contentToDisplay = urlParams.get('content');
+      console.log(contentToDisplay);
+        tinymce.init({
+            selector: '#id_content',
+            height: 360,
+            width: 800,
+            plugins: 'advlist autolink lists link image charmap print preview anchor',
+            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            toolbar_mode: 'floating',
+            setup: function (editor) {
+                editor.on('init', function () {
+                editor.setContent(contentToDisplay);
+                });
+            }
+        });
+
+        $(document).ready(function () {
+            $('#saveToDatabase').click(function () {
+                var form = $('#editorForm');
+                var content = tinymce.get('id_content').getContent();
+
+                // Append the content to the form data
+                var formData = form.serialize() + '&content=' + encodeURIComponent(content);
+
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: formData,
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            $('#successModal').fadeIn().delay(5000).fadeOut();
+                        } else {
+                            alert('Failed to save data. Please try again.');
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+
+
+        $('#previewButton').on('click', function () {
+            tinymce.activeEditor.execCommand('mcePreview');
+   });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.nav-link').click(function () {
+                var contentId = $(this).data('content-id');
+                // Assuming you have an API endpoint to fetch content by ID
+                $.ajax({
+                    type: 'GET',
+                    url: '/eqeditor/api/get_content/' + contentId + '/',  // Update with your actual API endpoint
+                    dataType: 'json',
+                    success: function (data) {
+                        // Populate the editor with the retrieved content
+                        tinymce.get('id_content').setContent(data.content);
+                    },
+                    error: function () {
+                        alert('Failed to fetch content. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

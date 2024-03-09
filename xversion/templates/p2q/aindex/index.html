@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>JotQuest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'frontpage/custom.css' %}">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+
+  <style>
+      body {
+      background-color: #f8f9fa;
+font-family: 'Open Sans', sans-serif !important;
+  font-weight: 400;
+  font-style: normal;
+
+        padding-top: 56px; /* Adjust this value based on your navbar height */
+
+      }
+    .container {
+      margin-top: 50px;
+    }
+
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      margin-top: 10px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    /* Auto-expand textarea styles */
+    textarea {
+      resize: none;
+      overflow-y: hidden;
+    }
+    /* Remove incrementer from number input */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    /* Custom styles for the image picker */
+    .image-picker, .pdf-picker {
+      display: none;
+    }
+    .image-preview, .pdf-preview {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+    }
+
+    /* Difficulty level buttons */
+    .difficulty-buttons {
+      display: inline-flex;
+      justify-content: space-between;
+    }
+    .difficulty-button {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-left: 30px;
+      margin-right: 30px;
+    }
+    .easy-button {
+      background-color: green;
+    }
+    .moderate-button {
+      background-color: yellow;
+    }
+    .hard-button {
+      background-color: red;
+    }
+
+.table td {
+    border-top: none !important;
+    width: 170px !important;
+}
+
+
+
+
+
+#generateQuest {
+    background-color: #F92 !important;
+  border-color: #F92 !important;
+  width: 300px;
+}
+
+
+#toggleButton1 {
+    margin-left: 53em;
+    font-weight: bold;
+}
+
+
+.upload_dropZone {
+  color: #0f3c4b;
+  height: 120px;
+  background-color: var(--colorPrimaryPale, #c8dadf);
+  outline: 2px dashed var(--colorPrimaryHalf, #c1ddef);
+  outline-offset: -12px;
+  transition:
+    outline-offset 0.2s ease-out,
+    outline-color 0.3s ease-in-out,
+    background-color 0.2s ease-out;
+}
+.upload_dropZone.highlight {
+  outline-offset: -4px;
+  outline-color: var(--colorPrimaryNormal, #0576bd);
+  background-color: var(--colorPrimaryEighth, #c8dadf);
+}
+.upload_svg {
+  fill: var(--colorPrimaryNormal, #0576bd);
+  display: inline-flex;
+}
+.btn-upload {
+  color: #fff;
+  background-color: var(--colorPrimaryNormal);
+}
+.btn-upload:hover,
+.btn-upload:focus {
+  color: #fff;
+  background-color: var(--colorPrimaryGlare);
+}
+.upload_img {
+  width: calc(33.333% - (2rem / 3));
+  object-fit: contain;
+}
+
+    .transparent-navbar {
+      background-color: transparent;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .opaque-navbar {
+      background-color: #232F3E; /* Change this color to your desired opaque color */
+    }
+
+    .opaque-navbar .navbar-nav .nav-link {
+      color: white !important; /* Font color for the links in the opaque navbar */
+    }
+
+    .logo {
+      display: none !important; /* Hide the logo by default */
+      font-family: "Pacifico", cursive;
+      color: white !important;
+      font-size: 1.5rem;
+          font-weight: 400;
+              transition: visibility 0.3s ease-in-out;
+
+    }
+
+    .opaque-navbar .logo {
+      display: block !important; /* Show the logo when the navbar becomes opaque */
+
+    }
+
+#heading {
+    transition: visibility 0.3s ease-in-out;
+  }
+        .cursive-title {
+  font-family: "Pacifico", cursive;
+          font-size: 4em; /* Adjust the font size as needed */
+          font-weight: 400;
+  font-style: normal;
+      text-align: center; /* Center the text */
+      margin-top: 20px; /* Add some top margin for spacing */
+    }
+  </style>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+
+
+
+
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top transparent-navbar">
+  <a class="navbar-brand logo" href="{% url 'index' %}">JotQuest</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+
+
+   <ul class="navbar-nav ml-auto">
+       <li class="nav-item"><a class="nav-link" href="">Pricing</a></li>
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ request.user.email }}
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'useraccounts:view_profile'%}">Profile</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:edit_profile'%}">Edit Profile</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:change_password'%}">Change Password</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:logout'%}">Log Out</a>
+
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+        </li>
+       {% endif %}
+
+       {% if user.is_authenticated %}
+       {% else %}
+       <li class="nav-item"><a class="nav-link" href="{% url 'useraccounts:signup' %}" data-selector="nav a, a.edit" style="">Sign Up</a></li>
+       <li class="nav-item"><a class="nav-link" href="{% url 'useraccounts:login' %}?next={{request.path}}" data-selector="nav a, a.edit" style="">Log In</a></li>
+       {% endif %}
+
+
+    </ul>
+
+
+  </div>
+</nav>
+
+
+<div>  <h1 id="heading" class="cursive-title">JotQuest</h1> </div>
+
+  <div class="container">
+      <a id="toggleButton1" href="javascript:;" onclick="replaceFormWithPDFPicker()">I have PDF</a>
+
+
+
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalLabel">Your words exceed the limit of 500. Login to continue.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+                      <h4 class="card-title text-center">Sign In</h4>
+              {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+              {% if form.non_field_errors %}
+                                                 {% for error in form.non_field_errors %}
+                                                 <div class="text-danger" style="color:red;">
+                                                     {{ error }}
+                                                 </div>
+                                                 {% endfor %}
+                                                 {% endif %}
+             <!--  {{ form.non_field_errors }}for form field erros -->
+              <form method="POST" action="{% url 'useraccounts:login' %}">
+                 {% csrf_token %}
+
+                  <div class="form-label-group" style="margin-bottom:10px;">
+
+                {{ form.username }}
+
+              </div>
+                  <div class="form-label-group" style="margin-bottom:10px;">
+
+                {{ form.password }}
+              </div>
+                  <div class="custom-control custom-checkbox mb-3">
+                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                <label class="custom-control-label" for="customCheck1">Remember password</label>
+              </div>
+                  <span ><a href="{% url 'password_reset' %}">Can't remember my password</a></span><hr class="my-1">
+              <input value="Login Securely" name="" class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">
+               <!--  <hr class="my-4">
+           <button class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i class="fab fa-google mr-2"></i> Sign in with Google</button>
+              <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="submit"><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>-->
+
+            </form>
+
+
+      </div>
+        <div class="text-center">
+                    <h5>OR</h5>
+            {% load socialaccount %}
+<a href="{% provider_login_url 'google'%}?next=/">Login with <img width="48" height="48" src="https://img.icons8.com/color/96/google-logo.png" alt="google-logo"/></a>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+    <div class="form-container text-center" id="formContainer">
+      <form onsubmit="openLoader()" method="post" action="{% url 'p2q:result_view'%}">
+                  {% csrf_token %}
+
+                 <!-- Auto-expand textarea -->
+        <div id="pdfPicker" class="form-group" style="display: none">
+            <label for="pdfUploader">Upload Single PDF:</label>
+            <input type="file" id="pdfUploader" accept=".pdf">
+            <p id="pdfMessage"></p>
+        </div>
+        <div id="paraPicker" class="form-group">
+          <label for="user_input"><span class="font-weight-bold mt-2">Paste the Paragraph</span></label>
+          <textarea class="form-control" id="user_input" name="user_input" rows="1" placeholder="Write text here..."></textarea>
+          <small id="wordCount" class="form-text text-muted">Word count: 0</small>
+        </div>
+
+
+        <table class="table" style="border: none">
+  <tbody>
+    <tr>
+      <td><label for="numberInput"><span class="font-weight-bold mt-2">Number of Questions: </span></label></td>
+        <td><span id="sliderValue" class="font-weight-bold mt-2">0</span></td>
+      <td><input type="range" class="form-control-range mx-auto" id="numberInput" min="1"></td>
+    </tr>
+    <tr>
+      <td><label for="difficultyLevel"><span class="font-weight-bold mt-2">Difficulty: </span></label></td>
+        <td><span id="difficultyValue" class="font-weight-bold mt-2">Moderate</span></td>
+      <td>
+                  <div class="difficulty-buttons">
+          <div class="difficulty-button easy-button" onclick="setDifficulty('Easy')"></div>
+          <div class="difficulty-button moderate-button" onclick="setDifficulty('Moderate')"></div>
+          <div class="difficulty-button hard-button" onclick="setDifficulty('Hard')"></div>
+                  </div>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="questionCategory"><span class="font-weight-bold mt-2">Type: </span></label></td>
+        <td><span id="categoryValue" class="font-weight-bold mt-2">Open</span></td>
+      <td>
+                  <div class="form-group">
+
+                    <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioOptions" id="radioOption1" onclick="setCategory('Open')" checked>
+            <label class="form-check-label" for="radioOption1">
+              Open questions
+            </label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="radioOptions" id="radioOption2" onclick="setCategory('Choice')">
+            <label class="form-check-label" for="radioOption2">
+              Choice questions
+            </label>
+          </div>
+                  </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+        <button type="submit" id="generateQuest" class="btn btn-primary btn-block">Generate Questions <img src="{% static 'ico_set/icons8-ai-32.png' %}"></button>
+      </form>
+
+    </div>
+
+              <div id="loadingModal" class="text-center" style="display: none;">
+                  <div><img src="{% static 'ico_set/loader.gif' %}"></div>
+                  <div style="font-weight:bold"> Finding best possible questions </div>
+              </div>
+  </div>
+
+<footer id="myFooter">
+        <div class="footer-copyright">
+            <p>© 2024 EduQuest. Product by Ayush Sharma.</p><p>All rights reserved.</p>
+        </div>
+    </footer>
+
+
+
+
+
+
+
+
+
+  <script>
+    // Function to replace the form with the image picker
+    function replaceFormWithPDFPicker() {
+    var button = document.getElementById("toggleButton1");
+
+    if (button.innerText === "I have PDF") {
+      button.innerText = "I have plain text";
+      document.getElementById('paraPicker').style.display = 'none';
+      document.getElementById('pdfPicker').style.display = 'block';
+    } else {
+      button.innerText = "I have PDF";
+      document.getElementById('paraPicker').style.display = 'block';
+      document.getElementById('pdfPicker').style.display = 'none';
+    }
+    }
+  </script>
+
+  <script>
+      const textarea = document.getElementById('user_input');
+      const numberInput = document.getElementById('numberInput');
+      var isAuthenticated = {% if user.is_authenticated %} true {% else %} false {% endif %};
+
+      textarea.addEventListener('input', function () {
+        var textareaValue = this.value;
+        numberInput.disabled = textareaValue.trim() === '';
+        autoExpandArea(this);
+        word_count = calcWordCount();
+        var maxRangeValue = Math.ceil(0.05 * word_count);
+        document.getElementById('numberInput').setAttribute('max', maxRangeValue);
+        setNoQuest(word_count);
+
+        if (!isAuthenticated) {
+            if (word_count > 500) {
+                $('#loginModal').modal('show');
+            }
+        }
+      });
+
+	  const sliderValue = document.getElementById('sliderValue');
+
+	  numberInput.addEventListener('input', function () {
+		sliderValue.textContent = this.value;
+	  });
+
+    function setDifficulty(level) {
+      difficultyValue.textContent = level;
+    }
+    function setCategory(type) {
+      categoryValue.textContent = type;
+    }
+  </script>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $(window).scroll(function() {
+      if ($(this).scrollTop() > 70) {
+        $('.navbar').addClass('opaque-navbar');
+              $("#heading").css({"visibility":"hidden"});
+      } else {
+        $('.navbar').removeClass('opaque-navbar');
+
+              $("#heading").css({"visibility":"visible"});
+      }
+    });
+  });
+</script>
+
+<script>
+    function generateQuestions() {
+        var userInput = document.getElementById('messageTextarea').value;
+        console.log(userInput);
+        fetch('/p2q/chat/?user_input=' + encodeURIComponent(userInput))
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('questions-container').innerText = data.questions;
+            })
+            .catch(error => {
+                console.log(data.questions);
+                console.error('Error fetching questions:', error);
+            });
+    }
+</script>
+
+<script>
+
+function openLoader() {
+    document.getElementById("formContainer").style.display = "none";
+    document.getElementById("loadingModal").style.display = "block";
+  }
+
+</script>
+
+<script>
+    function calcWordCount() {
+        const textarea = document.getElementById('user_input');
+        const wordCountElement = document.getElementById('wordCount');
+
+        const words = textarea.value.split(/\s+/).filter(function (word) {
+        return word.length > 0;
+        });
+        wordCountElement.textContent = 'Word count: ' + words.length;
+        return words.length;
+    }
+
+    function setNoQuest(word_count) {
+        const sliderValue = document.getElementById('sliderValue');
+        var maxRangeValue = Math.ceil(0.05 * word_count);
+        if (maxRangeValue > 20) {
+            document.getElementById('numberInput').setAttribute('max', 20);
+            sliderValue.textContent = '20';
+        }
+        else {
+            document.getElementById('numberInput').setAttribute('max', maxRangeValue);
+            sliderValue.textContent = maxRangeValue;
+        }
+    }
+
+    function autoExpandArea(obj) {
+        obj.style.height = 'auto';
+        obj.style.height = (obj.scrollHeight) + 'px';
+    }
+</script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const pdfPicker = document.getElementById('pdfPicker');
+            const paraPicker = document.getElementById('paraPicker');
+            const pdfUploader = document.getElementById('pdfUploader');
+            const resultTextarea = document.getElementById('user_input');
+            const wordCountElement = document.getElementById('wordCount');
+
+            pdfUploader.addEventListener('change', handlePdfUpload);
+
+            function handlePdfUpload() {
+                const file = pdfUploader.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Use pdfjs-dist to extract text from the PDF
+                        const typedArray = new Uint8Array(e.target.result);
+                        pdfjsLib.getDocument(typedArray).promise.then(function (pdfDoc) {
+                            const numPages = pdfDoc.numPages;
+                            let text = '';
+
+                            function extractText(pageNum) {
+                                return pdfDoc.getPage(pageNum).then(function (page) {
+                                    return page.getTextContent().then(function (textContent) {
+                                        const items = textContent.items;
+                                        for (let i = 0; i < items.length; i++) {
+                                            text += items[i].str + ' ';
+                                        }
+
+                                        if (pageNum < numPages) {
+                                        console.log('inside if');
+                                            return extractText(pageNum + 1);
+                                        } else {
+                                            resultTextarea.value = text;
+                                            pdfPicker.style.display = "none";
+                                            paraPicker.style.display = "block";
+                                            autoExpandArea(resultTextarea);
+                                            word_count = calcWordCount()
+                                            wordCountElement.textContent = 'Word count: ' + word_count;
+                                            setNoQuest(word_count);
+                                        }
+                                    });
+                                });
+                            }
+
+                            extractText(1); // Start with the first page
+                        });
+                    };
+
+                    reader.readAsArrayBuffer(file);
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

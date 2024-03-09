@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content="Contact us page content mention">
+ <meta name="keywords" content="yaanrides Contact us,yaanride Contact us,yanride Contact us,yanrides Contact us">
+    <title>Contact Us - YAAN Rides</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><link rel="stylesheet" href="{% static 'stylesheet/index_direct.css' %}">
+<link rel="shortcut icon" href="{% static 'ico_set/ry-logo/favicon.ico' %}" type="image/x-icon">
+<link rel="icon" href="{% static 'ico_set/ry-logo/favicon.ico' %}" type="image/x-icon">
+</head>
+<body>
+{% block content %}
+
+            <header class="header7" id="header7">
+{% include "useraccounts/base.html" %}
+            </header><!-- header -->
+            <section id="content-section5" class="content-section5">
+                <div class="container">
+                    <div class="row">
+                      <div class="col-md-8">
+{% block title %}
+<h3>Contact Us</h3>
+{% endblock %}
+<p class="ct-dtl-li"><span style="font-size: medium;">The contact is available between 9:00-20:00 hrs</span></p>
+<p class="ct-dtl-li"><span style="font-size: medium;">Email: sales@yaanrides.com</span></p>
+<p class="ct-dtl-li"><span style="font-size: medium;">Phone: (+91)999 9999 999*</span></p>
+
+                      </div>
+                    </div><!-- end row -->
+                </div><!-- end container -->
+            </section>
+{% endblock %}
+</body>
+</html>

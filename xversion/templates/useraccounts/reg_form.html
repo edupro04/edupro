@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EduQuest - Editor{% endblock %}
+
+{% block content %}
+
+<div id="main" class="row">
+  <div class="intro center-content">
+                    <div class="container">
+
+                        <div class="row">
+                            <div class="col-md-5">
+                                {{ form.non_field_errors }}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h3 class="pull-stop" data-selector="h3" style="">Keep track of your questionnaire.</h3>
+                                            <h4><p data-selector="p" style="">Signup now</p></h4>
+                                        </div>
+
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                {% if form.first_name.errors %}
+                                                {% for error in form.first_name.errors %}
+
+                                                <div class="text-danger" style="color:red;">
+                                                {{ error }}
+                                              </div>
+                                                {% endfor %}
+                                                {% endif %}
+                                                {{ form.first_name }}
+                                            </div>
+                                            <div class="form-group">
+                                                {% if form.last_name.errors %}
+                                                {% for error in form.last_name.errors %}
+
+                                                <div class="text-danger" style="color:red;">
+                                                {{ error }}
+                                              </div>
+                                                {% endfor %}
+                                                {% endif %}
+                                                {{ form.last_name }}
+                                            </div>
+                                            <div class="form-group">
+                                                {% if form.email.errors %}
+                                                {% for error in form.email.errors %}
+
+                                                <div class="text-danger" style="color:red;">
+                                                {{ error }}
+                                              </div>
+                                                {% endfor %}
+                                                {% endif %}
+                                                {{ form.email }}
+                                            </div>
+                                             <div class="form-group">
+                                                 {% if form.phone.errors %}
+                                                 {% for error in form.phone.errors %}
+                                                 <div class="text-danger" style="color:red;">
+                                                     {{ error }}
+                                                 </div>
+                                                 {% endfor %}
+                                                 {% endif %}
+                                             {{ form.phone }}
+                                            </div>
+                                             <div class="form-group">
+                                                 {% if form.city.errors %}
+                                                 {% for error in form.city.errors %}
+                                                 <div class="text-danger" style="color:red;">
+                                                     {{ error }}
+                                                 </div>
+                                                 {% endfor %}
+                                                 {% endif %}
+                                                {{ form.city }}
+                                            </div>
+
+
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                {% if form.password1.errors %}
+                                                 {% for error in form.password1.errors %}
+                                                 <div class="text-danger" style="color:red;">
+                                                     {{ error }}
+                                                 </div>
+                                                 {% endfor %}
+                                                 {% endif %}
+                                                {{ form.password1 }}
+                                            </div>
+                                            <div class="form-group">
+                                                {% if form.password2.errors %}
+                                                 {% for error in form.password2.errors %}
+                                                 <div class="text-danger" style="color:red;">
+                                                     {{ error }}
+                                                 </div>
+                                                 {% endfor %}
+                                                 {% endif %}
+
+                                                {{ form.password2 }}
+                                            </div>
+                                            <input type="submit" class="btn btn-info btn-block button" value="Proceed" data-selector="a.btn, button.btn" style="">
+                                            <div class="sign-tag"><p data-selector="p" style="">Already Have a Account | <a href="{% url 'useraccounts:login' %}">Log In</a></p></div>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div><!-- row -->
+
+                    </div><!-- intro -->
+
+                </div><!-- container -->
+
+
+</div>
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

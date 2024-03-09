@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <title>{% block title %}EduQuest - Make question paper in a minute{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'frontpage/custom.css' %}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+
+      body {
+      background-color: #f8f9fa;
+font-family: 'Open Sans', sans-serif !important;
+  font-weight: 400;
+  font-style: normal;
+
+        padding-top: 56px; /* Adjust this value based on your navbar height */
+
+      }
+
+    .container {
+        margin-top: 20px;
+    }
+    .opaque-navbar {
+      background-color: #232F3E; /* Change this color to your desired opaque color */
+    }
+
+    .opaque-navbar .navbar-nav .nav-link {
+      color: white !important; /* Font color for the links in the opaque navbar */
+    }
+
+    .logo {
+      display: none !important; /* Hide the logo by default */
+      font-family: "Pacifico", cursive;
+      color: white !important;
+      font-size: 1.5rem;
+          font-weight: 400;
+              transition: visibility 0.3s ease-in-out;
+
+    }
+
+    .opaque-navbar .logo {
+      display: block !important; /* Show the logo when the navbar becomes opaque */
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top opaque-navbar">
+  <a class="navbar-brand logo" href="{% url 'index' %}">EduQuest</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+
+
+   <ul class="navbar-nav ml-auto">
+       <li class="nav-item"><a class="nav-link" href="">Pricing</a></li>
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ request.user.email }}
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'useraccounts:view_profile'%}">Profile</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:edit_profile'%}">Edit Profile</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:change_password'%}">Change Password</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:logout'%}">Log Out</a>
+
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+        </li>
+       {% endif %}
+
+       {% if user.is_authenticated %}
+       {% else %}
+       <li class="nav-item"><a class="nav-link" href="{% url 'useraccounts:signup' %}" data-selector="nav a, a.edit" style="">Sign Up</a></li>
+       <li class="nav-item"><a class="nav-link" href="{% url 'useraccounts:login' %}?next={{request.path}}" data-selector="nav a, a.edit" style="">Log In</a></li>
+       {% endif %}
+    </ul>
+
+
+  </div>
+</nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+</body>
+</html>

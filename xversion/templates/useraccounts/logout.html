@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}EduQuest - Logout{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="jumbotron">
+    <h4>Logged out! We are working hard for giving you best results. </h4>
+<span ><a href="{% url 'useraccounts:login' %}">Log in again</a></span>
+  </div>
+</div>
+
+{% endblock %}
+

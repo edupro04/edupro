@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'frontpage/custom.css' %}">
+
+  <style>
+
+      body {
+      background-color: #f8f9fa;
+font-family: 'Open Sans', sans-serif !important;
+  font-weight: 400;
+  font-style: normal;
+
+        padding-top: 56px; /* Adjust this value based on your navbar height */
+
+      }
+    .container {
+      width: 65% !important;
+    }
+
+
+#toggleButton {
+    background-color: #F92 !important;
+  border-color: #F92 !important;
+  margin-top: 50px;
+margin-left: 300px;
+}
+
+    .opaque-navbar {
+      background-color: #232F3E; /* Change this color to your desired opaque color */
+    }
+
+    .opaque-navbar .navbar-nav .nav-link {
+      color: white !important; /* Font color for the links in the opaque navbar */
+    }
+
+    .logo {
+      display: none !important; /* Hide the logo by default */
+      font-family: "Pacifico", cursive;
+      color: white !important;
+      font-size: 1.5rem;
+          font-weight: 400;
+              transition: visibility 0.3s ease-in-out;
+
+    }
+
+    .opaque-navbar .logo {
+      display: block !important; /* Show the logo when the navbar becomes opaque */
+
+    }
+
+
+
+        #sidebar {
+      height: 100%;
+      width: 250px; /* Set the initial width to your desired open width */
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #232F3E;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+    }
+
+    #sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 18px;
+      color: #ffffff;
+      display: block;
+      transition: 0.3s;
+      border-bottom: 1px solid #555; /* Add a border line */
+    }
+
+    #sidebar a:first-child {
+      border-bottom: none; /* Remove the border from the last link */
+    }
+
+    #sidebar a:last-child {
+      border-bottom: none; /* Remove the border from the last link */
+    }
+
+    #sidebar a:hover {
+      color: #f1f1f1;
+    }
+
+    #main {
+      transition: margin-left .5s;
+      padding: 16px;
+      margin-left: 300px; /* Set the initial margin to match the open width */
+    }
+
+
+
+    .horiz-elems {
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        line-height: 30px;
+    }
+    #your-para {
+        background: #f1f1f1;
+    }
+
+    #result-quest {
+
+    }
+
+    #successModal {
+        display: block;
+        position: fixed;
+        top: 150px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 99;
+    }
+
+  </style>
+
+        {{ form.media }}
+</head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<body>
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light fixed-top opaque-navbar">
+  <a class="navbar-brand logo" href="#">EduQuest</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+
+
+   <ul class="navbar-nav ml-auto">
+       <li class="nav-item"><a class="nav-link" href="">Pricing</a></li>
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ request.user.email }}
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'useraccounts:view_profile'%}">Profile</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:edit_profile'%}">Edit Profile</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:change_password'%}">Change Password</a>
+                <a class="dropdown-item" href="{% url 'useraccounts:logout'%}">Log Out</a>
+
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+        </li>
+       {% endif %}
+
+       {% if user.is_authenticated %}
+       {% else %}
+       <li class="nav-item"><a class="nav-link" href="{% url 'useraccounts:register' %}" data-selector="nav a, a.edit" style="">Sign Up</a></li>
+       <li class="nav-item"><a class="nav-link" href="{% url 'useraccounts:login' %}?next={{request.path}}" data-selector="nav a, a.edit" style="">Log In</a></li>
+       {% endif %}
+
+
+    </ul>
+
+
+  </div>
+</nav>
+
+
+
+
+
+    <div id="successModal" class="text-center" style="display: none;">
+        <div><img src="{% static 'ico_set/icons8-success-96.png' %}"></div>
+        <div style="font-weight:bold"> Saved Successfully </div>
+    </div>
+
+    <div id="sidebar">
+        <h4 class="text-center" style="color:#ffffff">Your questionnaires</h4>
+        {% for content in user_content %}
+            <a data-content-id="{{content.id}}">{{content.content}}</a>
+        {% endfor %}
+</div>
+
+        <button id="toggleButton" class="btn btn-primary text-center" onclick="toogleNav()">Hide all questionnaires</button>
+
+<div id="main" class="container">
+  <div class="row">
+    <div class="col col-lg-2">
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const toggleButton = document.getElementById("toggleButton");
+      toggleButton.addEventListener("click", function() {
+        if (toggleButton.textContent === "Hide all questionnaires") {
+            toggleButton.textContent = "Show all questionnaires";
+            document.getElementById("sidebar").style.width = "0";
+            document.getElementById("main").style.marginLeft = "300px";
+        } else {
+            toggleButton.textContent = "Hide all questionnaires";
+            document.getElementById("sidebar").style.width = "250px";
+            document.getElementById("sidebar").style.width = "250px";
+        }
+      });
+     });
+  </script>
+            <div class="row">
+
+
+    <form id="editorForm" method="post" action="{% url 'eqeditor:save_to_database' %}">
+        {% csrf_token %}
+        <textarea id="id_content" name="content" rows="10" cols="40">{{ form.content.value }}</textarea>
+            {{ form.content.errors }}
+    <button type="button" id="saveToDatabase" class="btn btn-success" style="margin-top: 10px">Save</button>
+            <button id="previewButton" type="button" class="btn btn-primary" style="margin-top: 10px">Preview</button>
+
+</form>
+            </div>
+  </div>
+
+  </div>
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const contentToDisplay = urlParams.get('content');
+      console.log(contentToDisplay);
+        tinymce.init({
+            selector: '#id_content',
+            height: 360,
+            width: 800,
+            plugins: 'advlist autolink lists link image charmap print preview anchor',
+            toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            toolbar_mode: 'floating',
+            setup: function (editor) {
+                editor.on('init', function () {
+                editor.setContent(contentToDisplay);
+                });
+            }
+        });
+
+        $(document).ready(function () {
+            $('#saveToDatabase').click(function () {
+                var form = $('#editorForm');
+                var content = tinymce.get('id_content').getContent();
+
+                // Append the content to the form data
+                var formData = form.serialize() + '&content=' + encodeURIComponent(content);
+
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: formData,
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            $('#successModal').fadeIn().delay(5000).fadeOut();
+                        } else {
+                            alert('Failed to save data. Please try again.');
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+
+
+        $('#previewButton').on('click', function () {
+            tinymce.activeEditor.execCommand('mcePreview');
+   });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.nav-link').click(function () {
+                var contentId = $(this).data('content-id');
+                // Assuming you have an API endpoint to fetch content by ID
+                $.ajax({
+                    type: 'GET',
+                    url: '/eqeditor/api/get_content/' + contentId + '/',  // Update with your actual API endpoint
+                    dataType: 'json',
+                    success: function (data) {
+                        // Populate the editor with the retrieved content
+                        tinymce.get('id_content').setContent(data.content);
+                    },
+                    error: function () {
+                        alert('Failed to fetch content. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+</body>
+</html>
